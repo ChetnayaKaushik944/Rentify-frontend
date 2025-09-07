@@ -1,14 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useAuth } from "../context/AuthContext";
 import "./TenantDashboard.css";
+
 const API = process.env.REACT_APP_API_URL;
+
 const TenantDashboard = () => {
-  const { user, token, logout } = useAuth();
+  const { user, token } = useAuth(); // ✅ removed unused logout
   const [properties, setProperties] = useState([]);
   const [applications, setApplications] = useState([]);
 
   // ✅ Fetch all properties
-  const fetchProperties = async () => {
+  const fetchProperties = useCallback(async () => {
     try {
       const res = await fetch(`${API}/api/tenant/explore`);
       const data = await res.json();
@@ -20,10 +22,10 @@ const TenantDashboard = () => {
     } catch (err) {
       console.error("Fetch properties error:", err);
     }
-  };
+  }, []);
 
   // ✅ Fetch tenant applications
-  const fetchApplications = async () => {
+  const fetchApplications = useCallback(async () => {
     try {
       const res = await fetch(`${API}/api/tenant/applications`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -37,12 +39,13 @@ const TenantDashboard = () => {
     } catch (err) {
       console.error("Fetch applications error:", err);
     }
-  };
+  }, [token]);
 
+  // ✅ No more missing dependency warning
   useEffect(() => {
     fetchProperties();
     fetchApplications();
-  }, []);
+  }, [fetchProperties, fetchApplications]);
 
   // ✅ Apply for property
   const applyForProperty = async (propertyId) => {
@@ -72,9 +75,6 @@ const TenantDashboard = () => {
     <div className="tenant-dashboard">
       <div className="dashboard-header">
         <h2>Welcome, {user?.name} 👋</h2>
-        {/* <button className="logout-btn" onClick={logout}>
-          Logout
-        </button> */}
       </div>
 
       {/* Explore Properties */}
@@ -85,7 +85,11 @@ const TenantDashboard = () => {
             properties.map((p) => (
               <div className="property-card" key={p._id}>
                 {p.images?.[0] && (
-                  <img src={p.images[0]} alt={p.title} className="property-image" />
+                  <img
+                    src={p.images[0]}
+                    alt={p.title}
+                    className="property-image"
+                  />
                 )}
                 <h4>{p.title}</h4>
                 <p>{p.address}</p>
