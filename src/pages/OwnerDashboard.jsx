@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import "./OwnerDashboard.css";
+const API = process.env.REACT_APP_API_URL;
 
 const OwnerDashboard = () => {
   const { token, user } = useAuth();
@@ -17,7 +18,7 @@ const OwnerDashboard = () => {
   // ✅ Fetch owner properties
   const fetchProperties = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/owner/properties", {
+      const res = await fetch(`${API}/api/owner/properties`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -70,7 +71,7 @@ const OwnerDashboard = () => {
         formData.append("image", imageFile);
       }
 
-      const res = await fetch("http://localhost:5000/api/owner/add-property", {
+      const res = await fetch(`${API}/api/owner/add-property`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -101,7 +102,7 @@ const OwnerDashboard = () => {
   // ✅ Accept / Reject request
   const handleRequest = async (requestId, action) => {
     try {
-      const res = await fetch("http://localhost:5000/api/owner/handle-request", {
+      const res = await fetch(`${API}/api/owner/handle-request`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import "./TenantDashboard.css";
-
+const API = process.env.REACT_APP_API_URL;
 const TenantDashboard = () => {
   const { user, token, logout } = useAuth();
   const [properties, setProperties] = useState([]);
@@ -10,7 +10,7 @@ const TenantDashboard = () => {
   // ✅ Fetch all properties
   const fetchProperties = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/tenant/explore");
+      const res = await fetch(`${API}/api/tenant/explore`);
       const data = await res.json();
       if (res.ok) {
         setProperties(data);
@@ -25,7 +25,7 @@ const TenantDashboard = () => {
   // ✅ Fetch tenant applications
   const fetchApplications = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/tenant/applications", {
+      const res = await fetch(`${API}/api/tenant/applications`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -47,7 +47,7 @@ const TenantDashboard = () => {
   // ✅ Apply for property
   const applyForProperty = async (propertyId) => {
     try {
-      const res = await fetch("http://localhost:5000/api/tenant/apply", {
+      const res = await fetch(`${API}/api/tenant/apply`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

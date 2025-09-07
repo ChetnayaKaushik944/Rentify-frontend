@@ -1,13 +1,18 @@
 import { useState, useEffect } from "react";
 
-const useFetch = (url) => {
+const API = process.env.REACT_APP_API_URL; // 👈 env se base URL pick kar liya
+
+const useFetch = (endpoint) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(url);
+        const res = await fetch(`${API}${endpoint}`); // 👈 har jagah API prepend
+        if (!res.ok) {
+          throw new Error(`Failed to fetch: ${res.status}`);
+        }
         const json = await res.json();
         setData(json);
       } catch (err) {
@@ -18,7 +23,7 @@ const useFetch = (url) => {
     };
 
     fetchData();
-  }, [url]);
+  }, [endpoint]);
 
   return { data, loading };
 };
